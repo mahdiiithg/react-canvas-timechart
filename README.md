@@ -1,14 +1,14 @@
-# costume-line-chart
+# react-canvas-timechart
 
-[![npm version](https://img.shields.io/npm/v/costume-line-chart.svg)](https://www.npmjs.com/package/costume-line-chart)
-[![npm downloads](https://img.shields.io/npm/dm/costume-line-chart.svg)](https://www.npmjs.com/package/costume-line-chart)
-[![license](https://img.shields.io/npm/l/costume-line-chart.svg)](https://github.com/mahdiiithg/costume-line-chart/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/mahdiiithg/costume-line-chart.svg)](https://github.com/mahdiiithg/costume-line-chart)
+[![npm version](https://img.shields.io/npm/v/react-canvas-timechart.svg)](https://www.npmjs.com/package/react-canvas-timechart)
+[![npm downloads](https://img.shields.io/npm/dm/react-canvas-timechart.svg)](https://www.npmjs.com/package/react-canvas-timechart)
+[![license](https://img.shields.io/npm/l/react-canvas-timechart.svg)](https://github.com/mahdiiithg/react-canvas-timechart/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/mahdiiithg/react-canvas-timechart.svg)](https://github.com/mahdiiithg/react-canvas-timechart)
 
-A high-performance canvas-based line chart component for React with zoom, pan, and multi-chart synchronization. Perfect for real-time data visualization, time-series analysis, and dashboards requiring synchronized charts.
+High-performance canvas-based time-series chart for React with synchronized zoom, pan, and multi-chart tooltip support. Perfect for real-time data visualization, time-series analysis, and dashboards requiring synchronized charts.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/mahdiiithg/costume-line-chart/main/docs/assets/demo.gif" alt="costume-line-chart demo" width="600" />
+  <img src="https://raw.githubusercontent.com/mahdiiithg/react-canvas-timechart/main/docs/assets/demo.gif" alt="react-canvas-timechart demo" width="600" />
 </p>
 
 ## Features
@@ -26,13 +26,13 @@ A high-performance canvas-based line chart component for React with zoom, pan, a
 
 ```bash
 # npm
-npm install costume-line-chart
+npm install react-canvas-timechart
 
 # yarn
-yarn add costume-line-chart
+yarn add react-canvas-timechart
 
 # pnpm
-pnpm add costume-line-chart
+pnpm add react-canvas-timechart
 ```
 
 ### Peer Dependencies
@@ -46,7 +46,7 @@ npm install react dayjs lodash
 ## Quick Start
 
 ```jsx
-import { CostumeLineChart, ChartProvider } from 'costume-line-chart';
+import { CostumeLineChart, ChartProvider } from 'react-canvas-timechart';
 
 function App() {
   const data = [
@@ -85,7 +85,7 @@ function App() {
 One of the key features is synchronizing zoom, pan, and tooltips across multiple charts:
 
 ```jsx
-import { CostumeLineChart, ChartProvider } from 'costume-line-chart';
+import { CostumeLineChart, ChartProvider } from 'react-canvas-timechart';
 
 function Dashboard() {
   return (
@@ -185,7 +185,7 @@ interface Annotation {
 Wrap your charts with `ChartProvider` to enable synchronization:
 
 ```jsx
-import { ChartProvider } from 'costume-line-chart';
+import { ChartProvider } from 'react-canvas-timechart';
 
 <ChartProvider>
   {/* Your charts here */}
@@ -195,7 +195,7 @@ import { ChartProvider } from 'costume-line-chart';
 ### Utility Functions
 
 ```javascript
-import { minGraph, maxGraph } from 'costume-line-chart';
+import { minGraph, maxGraph } from 'react-canvas-timechart';
 
 // Calculate rounded axis bounds
 const yMin = minGraph(-3.2);  // Returns -4
@@ -301,9 +301,9 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 ## Links
 
-- [GitHub Repository](https://github.com/mahdiiithg/costume-line-chart)
-- [npm Package](https://www.npmjs.com/package/costume-line-chart)
-- [Issue Tracker](https://github.com/mahdiiithg/costume-line-chart/issues)
+- [GitHub Repository](https://github.com/mahdiiithg/react-canvas-timechart)
+- [npm Package](https://www.npmjs.com/package/react-canvas-timechart)
+- [Issue Tracker](https://github.com/mahdiiithg/react-canvas-timechart/issues)
 - [Changelog](CHANGELOG.md)
 
 ## Author
@@ -315,4 +315,4 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 ---
 
-If you find this package useful, please consider giving it a ⭐ on [GitHub](https://github.com/mahdiiithg/costume-line-chart)!
+If you find this package useful, please consider giving it a ⭐ on [GitHub](https://github.com/mahdiiithg/react-canvas-timechart)!

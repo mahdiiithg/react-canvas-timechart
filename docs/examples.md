@@ -1,6 +1,6 @@
 # Examples
 
-Practical examples for using costume-line-chart in various scenarios.
+Practical examples for using react-canvas-timechart in various scenarios.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ Practical examples for using costume-line-chart in various scenarios.
 Simple single-trace chart:
 
 ```jsx
-import { CostumeLineChart, ChartProvider } from 'costume-line-chart';
+import { CostumeLineChart, ChartProvider } from 'react-canvas-timechart';
 
 function TemperatureChart() {
   const data = [

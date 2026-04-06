@@ -1,7 +1,7 @@
 {
-  "name": "costume-line-chart",
+  "name": "react-canvas-timechart",
   "version": "1.0.0",
-  "description": "A high-performance canvas-based line chart component for React with zoom, pan, and multi-chart synchronization",
+  "description": "High-performance canvas-based time-series chart for React with synchronized zoom, pan, and multi-chart tooltip support",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "types/index.d.ts",
@@ -46,12 +46,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mahdiiithg/costume-line-chart.git"
+    "url": "git+https://github.com/mahdiiithg/react-canvas-timechart.git"
   },
   "bugs": {
-    "url": "https://github.com/mahdiiithg/costume-line-chart/issues"
+    "url": "https://github.com/mahdiiithg/react-canvas-timechart/issues"
   },
-  "homepage": "https://github.com/mahdiiithg/costume-line-chart#readme",
+  "homepage": "https://github.com/mahdiiithg/react-canvas-timechart#readme",
   "devDependencies": {
     "@babel/cli": "^7.28.6",
     "@babel/core": "^7.29.0",

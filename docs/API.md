@@ -1,6 +1,6 @@
 # API Reference
 
-Complete API documentation for costume-line-chart.
+Complete API documentation for react-canvas-timechart.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ Complete API documentation for costume-line-chart.
 The main chart component that renders a canvas-based line chart.
 
 ```jsx
-import { CostumeLineChart } from 'costume-line-chart';
+import { CostumeLineChart } from 'react-canvas-timechart';
 ```
 
 #### Props
@@ -99,7 +99,7 @@ import { CostumeLineChart } from 'costume-line-chart';
 Context provider that enables multi-chart synchronization.
 
 ```jsx
-import { ChartProvider } from 'costume-line-chart';
+import { ChartProvider } from 'react-canvas-timechart';
 ```
 
 #### Props
@@ -140,7 +140,7 @@ When one chart is zoomed or panned, all sibling charts within the same `ChartPro
 Access the chart context for custom integrations.
 
 ```jsx
-import { CostumeLineChartContext } from 'costume-line-chart';
+import { CostumeLineChartContext } from 'react-canvas-timechart';
 import { useContext } from 'react';
 
 const context = useContext(CostumeLineChartContext);
@@ -166,7 +166,7 @@ const context = useContext(CostumeLineChartContext);
 Calculates a rounded minimum value for Y-axis.
 
 ```javascript
-import { minGraph } from 'costume-line-chart';
+import { minGraph } from 'react-canvas-timechart';
 
 const yMin = minGraph(-3.2);  // Returns -4
 const yMin2 = minGraph(5.7);  // Returns 5
@@ -189,7 +189,7 @@ const yMin2 = minGraph(5.7);  // Returns 5
 Calculates a rounded maximum value for Y-axis.
 
 ```javascript
-import { maxGraph } from 'costume-line-chart';
+import { maxGraph } from 'react-canvas-timechart';
 
 const yMax = maxGraph(97.5);  // Returns 98
 const yMax2 = maxGraph(100);  // Returns 100

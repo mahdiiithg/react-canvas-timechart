@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of costume-line-chart
+- Initial release of react-canvas-timechart
 - High-performance canvas-based line chart rendering
 - Mouse wheel zoom with configurable anchors (top/bottom/center)
 - Pan support via shift+wheel and touch gestures

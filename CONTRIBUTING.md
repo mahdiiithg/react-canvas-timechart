@@ -1,6 +1,6 @@
-# Contributing to costume-line-chart
+# Contributing to react-canvas-timechart
 
-First off, thank you for considering contributing to costume-line-chart! It's people like you that make this library better for everyone.
+First off, thank you for considering contributing to react-canvas-timechart! It's people like you that make this library better for everyone.
 
 ## Code of Conduct
 
@@ -10,7 +10,7 @@ By participating in this project, you are expected to uphold our Code of Conduct
 
 ### Reporting Bugs
 
-Before creating bug reports, please check the [existing issues](https://github.com/mahdiiithg/costume-line-chart/issues) to avoid duplicates.
+Before creating bug reports, please check the [existing issues](https://github.com/mahdiiithg/react-canvas-timechart/issues) to avoid duplicates.
 
 When you are creating a bug report, please include as many details as possible:
 
@@ -49,8 +49,8 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/costume-line-chart.git
-cd costume-line-chart
+git clone https://github.com/YOUR_USERNAME/react-canvas-timechart.git
+cd react-canvas-timechart
 
 # Install dependencies
 yarn install
@@ -62,7 +62,7 @@ yarn build
 ### Project Structure
 
 ```
-costume-line-chart/
+react-canvas-timechart/
 ├── src/
 │   ├── index.js                    # Package exports
 │   ├── CostumeLineChart.jsx        # Main chart component
@@ -115,14 +115,14 @@ yarn build
 yarn link
 
 # In your test project
-yarn link costume-line-chart
+yarn link react-canvas-timechart
 ```
 
 Or use file-based installation:
 
 ```bash
 # In your test project
-yarn add file:../path/to/costume-line-chart
+yarn add file:../path/to/react-canvas-timechart
 ```
 
 ## Questions?
