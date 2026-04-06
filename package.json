@@ -1,0 +1,64 @@
+{
+  "name": "costume-line-chart",
+  "version": "1.0.0",
+  "description": "A high-performance canvas-based line chart component for React with zoom, pan, and multi-chart synchronization",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist",
+    "types",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "babel src --out-dir dist --copy-files",
+    "prepublishOnly": "npm run build",
+    "clean": "rm -rf dist",
+    "test": "echo 'Tests not yet configured'"
+  },
+  "peerDependencies": {
+    "dayjs": ">=1.10.0",
+    "lodash": ">=4.17.0",
+    "react": ">=17.0.0"
+  },
+  "keywords": [
+    "react",
+    "chart",
+    "canvas",
+    "line-chart",
+    "time-series",
+    "zoom",
+    "pan",
+    "touch-gestures",
+    "multi-chart",
+    "synchronized-charts",
+    "real-time",
+    "data-visualization",
+    "tooltip",
+    "annotations"
+  ],
+  "author": {
+    "name": "Mahdi Tahavorgar",
+    "url": "https://github.com/mahdiiithg"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mahdiiithg/costume-line-chart.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mahdiiithg/costume-line-chart/issues"
+  },
+  "homepage": "https://github.com/mahdiiithg/costume-line-chart#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/eslint-parser": "^7.28.6",
+    "@babel/preset-env": "^7.29.2",
+    "@babel/preset-react": "^7.28.5",
+    "eslint": "^10.2.0",
+    "eslint-plugin-react": "^7.37.5"
+  }
+}

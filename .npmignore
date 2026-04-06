@@ -1,0 +1,13 @@
+# Source files (use dist/ for distribution)
+src/
+*.jsx
+
+# Development files
+.eslintrc.js
+babel.config.json
+yarn.lock
+node_modules/
+
+# IDE
+.vscode/
+.idea/
