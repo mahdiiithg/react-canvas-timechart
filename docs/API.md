@@ -5,10 +5,10 @@ Complete API documentation for react-canvas-timechart.
 ## Table of Contents
 
 - [Components](#components)
-  - [CostumeLineChart](#costumelinechart)
+  - [TimeChart](#timechart)
   - [ChartProvider](#chartprovider)
 - [Hooks](#hooks)
-  - [useCostumeLineChartContext](#usecostumelinechartcontext)
+  - [useChartContext](#usechartcontext)
 - [Utilities](#utilities)
   - [minGraph](#mingraph)
   - [maxGraph](#maxgraph)
@@ -18,12 +18,12 @@ Complete API documentation for react-canvas-timechart.
 
 ## Components
 
-### CostumeLineChart
+### TimeChart
 
 The main chart component that renders a canvas-based line chart.
 
 ```jsx
-import { CostumeLineChart } from 'react-canvas-timechart';
+import { TimeChart } from 'react-canvas-timechart';
 ```
 
 #### Props
@@ -32,16 +32,19 @@ import { CostumeLineChart } from 'react-canvas-timechart';
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `receivedData` | `DataPoint[]` | Array of time-series data points. Each point must have a `received_at` timestamp and values for trace parameters. |
+| `data` | `DataPoint[]` | Array of time-series data points. Each point must have a timestamp field and values for trace parameters. |
 | `traces` | `Trace[]` | Array of trace configurations defining the lines to render. |
 
 ##### Data Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `workerMinMaxListScaled` | `WorkerMinMaxListScaled` | - | Pre-calculated min/max values for each trace. Improves performance by avoiding runtime calculations. |
+| `timestampKey` | `string` | `'timestamp'` | Key for the timestamp field in data objects. |
+| `traceMinMax` | `TraceMinMax` | - | Pre-calculated min/max values for each trace. Improves performance by avoiding runtime calculations. |
 | `annotations` | `Annotation[]` | `[]` | Array of annotations to display on the chart at specific timestamps. |
-| `timesList` | `string[]` | `[]` | Array of ISO-8601 timestamps to draw horizontal time markers. |
+| `timeMarkers` | `string[]` | `[]` | Array of ISO-8601 timestamps to draw horizontal time markers. |
+| `secondaryField` | `SecondaryField` | - | Secondary field to show in tooltip (e.g., depth, index). |
+| `domainMode` | `'independent' \| 'shared'` | `'independent'` | How trace Y-axis domains are calculated. |
 
 ##### Interaction Props
 
@@ -49,8 +52,8 @@ import { CostumeLineChart } from 'react-canvas-timechart';
 |------|------|---------|-------------|
 | `hasTooltip` | `boolean` | `true` | Enable/disable tooltip on mouse hover. |
 | `hasZoom` | `boolean` | `true` | Enable/disable zoom and pan interactions. |
-| `isReportChart` | `boolean` | `false` | When true, disables all interactions (static chart mode). |
-| `inLiveMode` | `boolean` | `false` | When true, auto-scrolls to keep the latest data point visible. |
+| `readOnly` | `boolean` | `false` | When true, disables all interactions (static chart mode). |
+| `liveMode` | `boolean` | `false` | When true, auto-scrolls to keep the latest data point visible. |
 
 ##### Zoom Props
 
@@ -63,8 +66,15 @@ import { CostumeLineChart } from 'react-canvas-timechart';
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `chartNum` | `string` | `''` | Unique identifier for the chart. Used for annotation filtering and multi-chart sync. |
-| `shouldDrawTimeLines` | `boolean` | `false` | Render time labels on the left side of the chart. |
+| `chartId` | `string` | `''` | Unique identifier for the chart. Used for annotation filtering and multi-chart sync. |
+| `showTimeLabels` | `boolean` | `false` | Render time labels on the left side of the chart. |
+| `showGrid` | `boolean \| GridConfig` | `true` | Show/hide grid or pass config object. |
+| `gridConfig` | `GridConfig` | - | Grid configuration (columns, rows, lineStyle, etc.). |
+| `showAxis` | `boolean \| AxisConfig` | `false` | Show/hide axis lines or pass config object. |
+| `axisConfig` | `AxisConfig` | - | Axis configuration (lineWidth, color, tickSize). |
+| `crosshairConfig` | `CrosshairConfig` | - | Crosshair/hover line configuration. |
+| `backgroundColor` | `string` | - | Override background color directly. |
+| `timeFormat` | `string` | `'HH:mm:ss'` | Time format string for labels (uses dayjs format). |
 | `isDarkMode` | `boolean` | `false` | Enable dark mode theme. |
 | `theme` | `ThemeConfig` | - | Custom theme configuration for colors. |
 
@@ -72,23 +82,25 @@ import { CostumeLineChart } from 'react-canvas-timechart';
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `convertToCurrentUnit` | `(value: number, unit: Unit) => number` | Function to convert values to user's preferred unit. |
-| `funcPromises` | `(params: VisibleRangeParams) => void` | Callback fired when the visible time range changes. |
+| `convertToCurrentUnit` | `(value: number, unitId?: string, context?: string) => number` | Function to convert values to user's preferred unit. |
+| `onVisibleRangeChange` | `(params: VisibleRangeParams) => void` | Callback fired when the visible time range changes. |
 
 #### Example
 
 ```jsx
-<CostumeLineChart
-  receivedData={data}
+<TimeChart
+  data={data}
   traces={traces}
   annotations={annotations}
   hasTooltip
   hasZoom
   isDarkMode={isDark}
-  chartNum="main_chart"
-  inLiveMode={isLive}
+  chartId="main_chart"
+  liveMode={isLive}
+  domainMode="shared"
+  showGrid={{ columns: 8, lineStyle: 'dotted' }}
   convertToCurrentUnit={unitConverter}
-  funcPromises={handleRangeChange}
+  onVisibleRangeChange={handleRangeChange}
 />
 ```
 
@@ -110,17 +122,23 @@ import { ChartProvider } from 'react-canvas-timechart';
 
 #### Usage
 
-Wrap multiple `CostumeLineChart` components with `ChartProvider` to synchronize:
+Wrap multiple `TimeChart` components with `ChartProvider` to synchronize:
 - Zoom level
-- Pan position
-- Tooltip display
+- Pan position  
+- Tooltip display (crosshair syncs across charts)
 
 ```jsx
 <ChartProvider>
-  <CostumeLineChart chartNum="chart_1" {...props1} />
-  <CostumeLineChart chartNum="chart_2" {...props2} />
-  <CostumeLineChart chartNum="chart_3" {...props3} />
+  <TimeChart chartId="chart_1" {...props1} />
+  <TimeChart chartId="chart_2" {...props2} />
+  <TimeChart chartId="chart_3" {...props3} />
 </ChartProvider>
+```
+
+**Single Chart Usage**: You can also use `TimeChart` without `ChartProvider` for standalone charts:
+
+```jsx
+<TimeChart data={data} traces={traces} hasZoom />
 ```
 
 #### Synchronization Behavior
@@ -135,15 +153,15 @@ When one chart is zoomed or panned, all sibling charts within the same `ChartPro
 
 ## Hooks
 
-### useCostumeLineChartContext
+### useChartContext
 
 Access the chart context for custom integrations.
 
 ```jsx
-import { CostumeLineChartContext } from 'react-canvas-timechart';
+import { ChartContext } from 'react-canvas-timechart';
 import { useContext } from 'react';
 
-const context = useContext(CostumeLineChartContext);
+const context = useContext(ChartContext);
 ```
 
 #### Context Values
@@ -213,11 +231,8 @@ const yMax2 = maxGraph(100);  // Returns 100
 
 ```typescript
 interface DataPoint {
-  /** ISO-8601 datetime string (required) */
-  received_at: string;
-  
-  /** Optional depth value */
-  depth?: number;
+  /** ISO-8601 datetime string (key is configurable via timestampKey prop) */
+  timestamp: string;  // or your custom key
   
   /** Dynamic trace values - keys match trace.parameter */
   [key: string]: number | string | undefined;
@@ -247,10 +262,91 @@ interface Trace {
   
   /** Unit configuration for value formatting */
   unit?: {
-    id: string;       // Unit identifier
+    id?: string;       // Unit identifier
     symbol: string;   // Display symbol (e.g., '°C')
     to_fixed?: number; // Decimal places
   };
+  
+  /** Fixed min/max bounds for this trace (overrides auto-calculation) */
+  domain?: [number, number];
+}
+```
+
+### SecondaryField
+
+```typescript
+interface SecondaryField {
+  /** Key in DataPoint to access the secondary value */
+  key: string;
+  
+  /** Display label for the field */
+  label: string;
+  
+  /** Optional unit string */
+  unit?: string;
+  
+  /** Custom formatter function */
+  format?: (value: any) => string;
+}
+```
+
+### GridConfig
+
+```typescript
+interface GridConfig {
+  /** Show grid (default: true) */
+  show?: boolean;
+  
+  /** Number of vertical grid lines (default: 10) */
+  columns?: number;
+  
+  /** Number of horizontal grid lines or 'auto' (default: 'auto') */
+  rows?: number | 'auto';
+  
+  /** Grid line style (default: 'dashed') */
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
+  
+  /** Grid line width (default: 0.5) */
+  lineWidth?: number;
+  
+  /** Override theme grid color */
+  color?: string;
+}
+```
+
+### AxisConfig
+
+```typescript
+interface AxisConfig {
+  /** Show axis (default: false) */
+  show?: boolean;
+  
+  /** Axis line width (default: 1) */
+  lineWidth?: number;
+  
+  /** Override theme axis color */
+  color?: string;
+  
+  /** Tick mark size, 0 to hide (default: 5) */
+  tickSize?: number;
+}
+```
+
+### CrosshairConfig
+
+```typescript
+interface CrosshairConfig {
+  /** Show crosshair on hover (default: true) */
+  show?: boolean;
+  
+  /** Crosshair color (default: 'red') */
+  color?: string;
+  
+  /** Line width (default: 1) */
+  lineWidth?: number;
+  
+  /** Line style (default: 'solid') */
+  style?: 'solid' | 'dashed';
 }
 ```
 

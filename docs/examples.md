@@ -5,7 +5,10 @@ Practical examples for using react-canvas-timechart in various scenarios.
 ## Table of Contents
 
 - [Basic Usage](#basic-usage)
+- [Single Chart vs Synced Charts](#single-chart-vs-synced-charts)
 - [Multiple Traces](#multiple-traces)
+- [Domain Modes](#domain-modes)
+- [Grid and Axis Configuration](#grid-and-axis-configuration)
 - [Multi-Chart Dashboard](#multi-chart-dashboard)
 - [Real-Time Data](#real-time-data)
 - [Custom Theming](#custom-theming)
@@ -20,15 +23,15 @@ Practical examples for using react-canvas-timechart in various scenarios.
 Simple single-trace chart:
 
 ```jsx
-import { CostumeLineChart, ChartProvider } from 'react-canvas-timechart';
+import { TimeChart } from 'react-canvas-timechart';
 
 function TemperatureChart() {
   const data = [
-    { received_at: '2024-01-01T10:00:00Z', temp: 22.5 },
-    { received_at: '2024-01-01T10:01:00Z', temp: 23.1 },
-    { received_at: '2024-01-01T10:02:00Z', temp: 22.8 },
-    { received_at: '2024-01-01T10:03:00Z', temp: 23.5 },
-    { received_at: '2024-01-01T10:04:00Z', temp: 24.2 },
+    { timestamp: '2024-01-01T10:00:00Z', temp: 22.5 },
+    { timestamp: '2024-01-01T10:01:00Z', temp: 23.1 },
+    { timestamp: '2024-01-01T10:02:00Z', temp: 22.8 },
+    { timestamp: '2024-01-01T10:03:00Z', temp: 23.5 },
+    { timestamp: '2024-01-01T10:04:00Z', temp: 24.2 },
   ];
 
   const traces = [
@@ -42,19 +45,48 @@ function TemperatureChart() {
   ];
 
   return (
-    <ChartProvider>
-      <div style={{ height: 400, width: '100%' }}>
-        <CostumeLineChart
-          receivedData={data}
-          traces={traces}
-          hasTooltip
-          hasZoom
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 400, width: '100%' }}>
+      <TimeChart
+        data={data}
+        traces={traces}
+        hasTooltip
+        hasZoom
+      />
+    </div>
   );
 }
 ```
+
+---
+
+## Single Chart vs Synced Charts
+
+**Single Chart** - Use `TimeChart` directly for standalone charts:
+
+```jsx
+import { TimeChart } from 'react-canvas-timechart';
+
+// Works independently - no wrapper needed
+<TimeChart data={data} traces={traces} hasZoom />
+```
+
+**Multiple Synced Charts** - Wrap with `ChartProvider` to sync hover, zoom, and pan:
+
+```jsx
+import { TimeChart, ChartProvider } from 'react-canvas-timechart';
+
+<ChartProvider>
+  {/* All charts stay synchronized */}
+  <TimeChart chartId="chart1" data={data1} traces={traces1} />
+  <TimeChart chartId="chart2" data={data2} traces={traces2} />
+  <TimeChart chartId="chart3" data={data3} traces={traces3} />
+</ChartProvider>
+```
+
+When charts are inside `ChartProvider`:
+- Hovering shows crosshair at same timestamp on all charts
+- Zooming affects all charts equally
+- Panning keeps all charts aligned
 
 ---
 
@@ -65,9 +97,9 @@ Display multiple data series on a single chart:
 ```jsx
 function MultiTraceChart() {
   const data = [
-    { received_at: '2024-01-01T10:00:00Z', temp: 22.5, humidity: 45, pressure: 1013 },
-    { received_at: '2024-01-01T10:01:00Z', temp: 23.1, humidity: 44, pressure: 1012 },
-    { received_at: '2024-01-01T10:02:00Z', temp: 22.8, humidity: 46, pressure: 1013 },
+    { timestamp: '2024-01-01T10:00:00Z', temp: 22.5, humidity: 45, pressure: 1013 },
+    { timestamp: '2024-01-01T10:01:00Z', temp: 23.1, humidity: 44, pressure: 1012 },
+    { timestamp: '2024-01-01T10:02:00Z', temp: 22.8, humidity: 46, pressure: 1013 },
   ];
 
   const traces = [
@@ -95,18 +127,115 @@ function MultiTraceChart() {
   ];
 
   return (
-    <ChartProvider>
-      <div style={{ height: 400 }}>
-        <CostumeLineChart
-          receivedData={data}
-          traces={traces}
-          hasTooltip
-          hasZoom
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 400 }}>
+      <TimeChart
+        data={data}
+        traces={traces}
+        hasTooltip
+        hasZoom
+      />
+    </div>
   );
 }
+```
+
+---
+
+## Domain Modes
+
+Control how each trace's Y-axis scale is calculated:
+
+**Independent Mode** (default) - Each trace uses its own min/max, filling the chart height:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={[
+    { name: 'Temp', parameter: 'temp', color: { code: '#ff6384' } },      // 20-30°C
+    { name: 'Pressure', parameter: 'pressure', color: { code: '#36a2eb' } }, // 1000-1020 hPa
+  ]}
+  domainMode="independent"  // Each trace scaled independently
+/>
+```
+
+**Shared Mode** - All traces share the same global min/max scale:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  domainMode="shared"  // All use same scale - good for comparison
+/>
+```
+
+**Fixed Domain Per Trace** - Set explicit bounds:
+
+```jsx
+const traces = [
+  {
+    name: 'Temperature',
+    parameter: 'temp',
+    color: { code: '#ff6384' },
+    domain: [0, 100],  // Fixed scale 0-100
+  },
+  {
+    name: 'Humidity',
+    parameter: 'humidity',
+    color: { code: '#36a2eb' },
+    // Auto-calculated based on domainMode
+  },
+];
+```
+
+---
+
+## Grid and Axis Configuration
+
+Customize grid appearance:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  showGrid={{
+    columns: 8,
+    rows: 6,
+    lineStyle: 'dotted',
+    lineWidth: 1,
+    color: '#cccccc',
+  }}
+/>
+```
+
+Add axis lines with custom styling:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  showAxis={true}
+  axisConfig={{
+    lineWidth: 2,
+    color: '#333',
+    tickSize: 8,
+  }}
+  showTimeLabels={true}
+  timeFormat="MMM DD HH:mm"
+/>
+```
+
+Custom crosshair:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  crosshairConfig={{
+    color: '#00ff00',
+    lineWidth: 2,
+    style: 'dashed',
+  }}
+/>
 ```
 
 ---
@@ -116,6 +245,8 @@ function MultiTraceChart() {
 Synchronized charts for comparing different metrics:
 
 ```jsx
+import { TimeChart, ChartProvider } from 'react-canvas-timechart';
+
 function Dashboard() {
   const data = generateData(); // Your data source
 
@@ -125,16 +256,16 @@ function Dashboard() {
         {/* Top Left - Temperature */}
         <div style={{ height: 250 }}>
           <h3>Temperature</h3>
-          <CostumeLineChart
-            receivedData={data}
+          <TimeChart
+            data={data}
             traces={[{
               name: 'Temp',
               parameter: 'temperature',
               color: { code: '#ff6384' },
               unit: { symbol: '°C' },
             }]}
-            chartNum="temp_chart"
-            shouldDrawTimeLines
+            chartId="temp_chart"
+            showTimeLabels
             hasZoom
           />
         </div>
@@ -142,15 +273,15 @@ function Dashboard() {
         {/* Top Right - Pressure */}
         <div style={{ height: 250 }}>
           <h3>Pressure</h3>
-          <CostumeLineChart
-            receivedData={data}
+          <TimeChart
+            data={data}
             traces={[{
               name: 'Pressure',
               parameter: 'pressure',
               color: { code: '#36a2eb' },
               unit: { symbol: 'bar' },
             }]}
-            chartNum="pressure_chart"
+            chartId="pressure_chart"
             hasZoom
           />
         </div>
@@ -158,13 +289,14 @@ function Dashboard() {
         {/* Bottom - Combined View */}
         <div style={{ height: 250, gridColumn: '1 / -1' }}>
           <h3>Combined View</h3>
-          <CostumeLineChart
-            receivedData={data}
+          <TimeChart
+            data={data}
             traces={[
               { name: 'Temp', parameter: 'temperature', color: { code: '#ff6384' } },
               { name: 'Flow', parameter: 'flow', color: { code: '#4bc0c0' } },
             ]}
-            chartNum="combined_chart"
+            chartId="combined_chart"
+            domainMode="shared"
             hasZoom
           />
         </div>
@@ -182,6 +314,7 @@ Auto-scrolling chart for live data:
 
 ```jsx
 import { useState, useEffect } from 'react';
+import { TimeChart } from 'react-canvas-timechart';
 
 function LiveChart() {
   const [data, setData] = useState([]);
@@ -191,7 +324,7 @@ function LiveChart() {
       setData(prev => [
         ...prev.slice(-100), // Keep last 100 points
         {
-          received_at: new Date().toISOString(),
+          timestamp: new Date().toISOString(),
           value: Math.random() * 100,
         },
       ]);
@@ -201,22 +334,20 @@ function LiveChart() {
   }, []);
 
   return (
-    <ChartProvider>
-      <div style={{ height: 400 }}>
-        <CostumeLineChart
-          receivedData={data}
-          traces={[{
-            name: 'Live Value',
-            parameter: 'value',
-            color: { code: '#00ff88' },
-            width: 2,
-          }]}
-          inLiveMode={true}
-          hasZoom
-          hasTooltip
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 400 }}>
+      <TimeChart
+        data={data}
+        traces={[{
+          name: 'Live Value',
+          parameter: 'value',
+          color: { code: '#00ff88' },
+          width: 2,
+        }]}
+        liveMode={true}
+        hasZoom
+        hasTooltip
+      />
+    </div>
   );
 }
 ```
@@ -228,6 +359,8 @@ function LiveChart() {
 Dark mode with custom colors:
 
 ```jsx
+import { TimeChart } from 'react-canvas-timechart';
+
 function ThemedChart({ isDark }) {
   const theme = isDark ? {
     background: '#1a1a2e',
@@ -242,19 +375,27 @@ function ThemedChart({ isDark }) {
   };
 
   return (
-    <ChartProvider>
-      <div style={{ height: 400, background: theme.background }}>
-        <CostumeLineChart
-          receivedData={data}
-          traces={traces}
-          isDarkMode={isDark}
-          theme={theme}
-          hasZoom
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 400, background: theme.background }}>
+      <TimeChart
+        data={data}
+        traces={traces}
+        isDarkMode={isDark}
+        theme={theme}
+        hasZoom
+      />
+    </div>
   );
 }
+```
+
+Or simply override the background:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  backgroundColor="#f5f5f5"
+/>
 ```
 
 ---
@@ -264,14 +405,17 @@ function ThemedChart({ isDark }) {
 Converting between metric and imperial:
 
 ```jsx
+import { useState } from 'react';
+import { TimeChart } from 'react-canvas-timechart';
+
 function UnitConvertingChart() {
   const [useImperial, setUseImperial] = useState(false);
 
-  const convertToCurrentUnit = (value, unit) => {
-    if (!unit) return value;
+  const convertToCurrentUnit = (value, unitId) => {
+    if (!unitId) return value;
     
     if (useImperial) {
-      switch (unit.id) {
+      switch (unitId) {
         case 'celsius':
           return (value * 9/5) + 32; // Fahrenheit
         case 'meters':
@@ -299,21 +443,22 @@ function UnitConvertingChart() {
   ];
 
   return (
-    <ChartProvider>
+    <div>
       <button onClick={() => setUseImperial(!useImperial)}>
         Toggle Units
       </button>
       <div style={{ height: 400 }}>
-        <CostumeLineChart
-          receivedData={data}
+        <TimeChart
+          data={data}
           traces={traces}
           convertToCurrentUnit={convertToCurrentUnit}
           hasZoom
         />
       </div>
-    </ChartProvider>
+    </div>
   );
 }
+```
 ```
 
 ---
@@ -323,6 +468,8 @@ function UnitConvertingChart() {
 Displaying events on the chart:
 
 ```jsx
+import { TimeChart } from 'react-canvas-timechart';
+
 function AnnotatedChart() {
   const annotations = [
     {
@@ -342,18 +489,16 @@ function AnnotatedChart() {
   ];
 
   return (
-    <ChartProvider>
-      <div style={{ height: 400 }}>
-        <CostumeLineChart
-          receivedData={data}
-          traces={traces}
-          annotations={annotations}
-          chartNum="main_chart"
-          hasZoom
-          hasTooltip
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 400 }}>
+      <TimeChart
+        data={data}
+        traces={traces}
+        annotations={annotations}
+        chartId="main_chart"
+        hasZoom
+        hasTooltip
+      />
+    </div>
   );
 }
 ```
@@ -365,18 +510,19 @@ function AnnotatedChart() {
 Non-interactive chart for reports:
 
 ```jsx
+import { TimeChart } from 'react-canvas-timechart';
+
 function ReportChart() {
   return (
-    <ChartProvider>
-      <div style={{ height: 300 }}>
-        <CostumeLineChart
-          receivedData={historicalData}
-          traces={traces}
-          isReportChart={true}
-          shouldDrawTimeLines
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 300 }}>
+      <TimeChart
+        data={historicalData}
+        traces={traces}
+        readOnly={true}
+        showTimeLabels
+        showAxis
+      />
+    </div>
   );
 }
 ```
@@ -389,10 +535,11 @@ Pre-calculating bounds for large datasets:
 
 ```jsx
 import { useMemo } from 'react';
+import { TimeChart } from 'react-canvas-timechart';
 
 function OptimizedChart({ data, traces }) {
   // Pre-calculate min/max for each trace
-  const workerMinMaxListScaled = useMemo(() => {
+  const traceMinMax = useMemo(() => {
     const bounds = {};
     
     traces.forEach(trace => {
@@ -413,18 +560,60 @@ function OptimizedChart({ data, traces }) {
   const memoizedTraces = useMemo(() => traces, [JSON.stringify(traces)]);
 
   return (
-    <ChartProvider>
-      <div style={{ height: 400 }}>
-        <CostumeLineChart
-          receivedData={data}
-          traces={memoizedTraces}
-          workerMinMaxListScaled={workerMinMaxListScaled}
-          hasZoom
-        />
-      </div>
-    </ChartProvider>
+    <div style={{ height: 400 }}>
+      <TimeChart
+        data={data}
+        traces={memoizedTraces}
+        traceMinMax={traceMinMax}
+        hasZoom
+      />
+    </div>
   );
 }
+```
+
+---
+
+## Custom Timestamp Field
+
+If your data uses a different timestamp key:
+
+```jsx
+// Data with custom timestamp field
+const data = [
+  { datetime: '2024-01-01T10:00:00Z', value: 25 },
+  { datetime: '2024-01-01T10:01:00Z', value: 26 },
+];
+
+<TimeChart
+  data={data}
+  traces={traces}
+  timestampKey="datetime"  // Use 'datetime' instead of 'timestamp'
+/>
+```
+
+---
+
+## Secondary Field (Show Additional Data)
+
+Display a secondary value in tooltip (e.g., depth, index):
+
+```jsx
+const data = [
+  { timestamp: '2024-01-01T10:00:00Z', value: 25, depth: 100 },
+  { timestamp: '2024-01-01T10:01:00Z', value: 26, depth: 150 },
+];
+
+<TimeChart
+  data={data}
+  traces={traces}
+  secondaryField={{
+    key: 'depth',
+    label: 'Depth',
+    unit: 'm',
+    format: (val) => val.toFixed(1),
+  }}
+/>
 ```
 
 ---

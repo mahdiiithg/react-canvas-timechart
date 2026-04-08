@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-08
+
+### Added
+
+- **Domain Modes**: New `domainMode` prop with 'independent' (each trace own scale) and 'shared' (global min/max)
+- **Per-Trace Domain**: `domain` property on traces for fixed min/max bounds
+- **Grid Configuration**: `showGrid` and `gridConfig` props for customizable grid (columns, rows, lineStyle, lineWidth, color)
+- **Axis Configuration**: `showAxis` and `axisConfig` props for axis lines and tick marks
+- **Crosshair Configuration**: `crosshairConfig` prop for custom crosshair styling (color, lineWidth, style)
+- **Background Override**: `backgroundColor` prop to override theme background
+- **Time Format**: `timeFormat` prop using dayjs format strings
+- **Secondary Field**: `secondaryField` prop to show additional data in tooltip (e.g., depth, index)
+- **Configurable Timestamp**: `timestampKey` prop to use custom timestamp field names
+
+### Changed
+
+- Renamed components for clarity:
+  - `CostumeLineChart` → `TimeChart` (old name still works)
+  - `CostumeLineChartContext` → `ChartContext` (old name still works)
+- Renamed props (old names still work but deprecated):
+  - `receivedData` → `data`
+  - `funcPromises` → `onVisibleRangeChange`
+  - `isReportChart` → `readOnly`
+  - `inLiveMode` → `liveMode`
+  - `shouldDrawTimeLines` → `showTimeLabels`
+  - `timesList` → `timeMarkers`
+  - `chartNum` → `chartId`
+  - `workerMinMaxListScaled` → `traceMinMax`
+  - `receivedDataLastHistoricaldate` → `liveDataBoundary`
+- Default timestamp key changed from `received_at` to `timestamp`
+
+### Documentation
+
+- Complete documentation rewrite with new prop names
+- Added examples for all new features
+- Added "Single Chart vs Synced Charts" guide
+
 ## [1.0.0] - 2024-XX-XX
 
 ### Added

@@ -45,14 +45,34 @@ npm install react dayjs lodash
 
 ## Quick Start
 
+### Single Chart (Standalone)
+
+Use `TimeChart` directly without any wrapper for a standalone chart:
+
 ```jsx
-import { CostumeLineChart, ChartProvider } from 'react-canvas-timechart';
+import { TimeChart } from 'react-canvas-timechart';
+
+function App() {
+  return (
+    <div style={{ height: 400 }}>
+      <TimeChart data={data} traces={traces} hasTooltip hasZoom />
+    </div>
+  );
+}
+```
+
+### Multiple Synced Charts
+
+Wrap charts in `ChartProvider` to synchronize hover, zoom, and pan across all charts:
+
+```jsx
+import { TimeChart, ChartProvider } from 'react-canvas-timechart';
 
 function App() {
   const data = [
-    { received_at: '2024-01-01T10:00:00Z', temperature: 25.5, pressure: 101.3 },
-    { received_at: '2024-01-01T10:01:00Z', temperature: 25.7, pressure: 101.2 },
-    { received_at: '2024-01-01T10:02:00Z', temperature: 26.1, pressure: 101.0 },
+    { timestamp: '2024-01-01T10:00:00Z', temperature: 25.5, pressure: 101.3 },
+    { timestamp: '2024-01-01T10:01:00Z', temperature: 25.7, pressure: 101.2 },
+    { timestamp: '2024-01-01T10:02:00Z', temperature: 26.1, pressure: 101.0 },
   ];
 
   const traces = [
@@ -68,8 +88,8 @@ function App() {
   return (
     <ChartProvider>
       <div style={{ height: 400, width: '100%' }}>
-        <CostumeLineChart
-          receivedData={data}
+        <TimeChart
+          data={data}
           traces={traces}
           hasTooltip
           hasZoom
@@ -85,25 +105,25 @@ function App() {
 One of the key features is synchronizing zoom, pan, and tooltips across multiple charts:
 
 ```jsx
-import { CostumeLineChart, ChartProvider } from 'react-canvas-timechart';
+import { TimeChart, ChartProvider } from 'react-canvas-timechart';
 
 function Dashboard() {
   return (
     <ChartProvider>
       {/* All charts inside ChartProvider stay in sync */}
       <div style={{ height: 300 }}>
-        <CostumeLineChart
-          receivedData={temperatureData}
+        <TimeChart
+          data={temperatureData}
           traces={temperatureTraces}
-          chartNum="chart_1"
+          chartId="chart_1"
           hasZoom
         />
       </div>
       <div style={{ height: 300 }}>
-        <CostumeLineChart
-          receivedData={pressureData}
+        <TimeChart
+          data={pressureData}
           traces={pressureTraces}
-          chartNum="chart_2"
+          chartId="chart_2"
           hasZoom
         />
       </div>
@@ -114,34 +134,102 @@ function Dashboard() {
 
 ## API Reference
 
-### CostumeLineChart Props
+### TimeChart Props
 
 #### Required Props
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `receivedData` | `DataPoint[]` | Array of time-series data points |
+| `data` | `DataPoint[]` | Array of time-series data points |
 | `traces` | `Trace[]` | Array of trace configurations |
 
-#### Optional Props
+#### Data Configuration
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `timestampKey` | `string` | `'timestamp'` | Key for timestamp field in data |
+| `secondaryField` | `object` | - | Secondary field to show in tooltip `{ key, label, unit?, format? }` |
+| `traceMinMax` | `object` | - | Pre-calculated axis bounds |
+| `domainMode` | `'independent' \| 'shared'` | `'independent'` | How trace scales are calculated |
+
+#### Display Configuration
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `showGrid` | `boolean \| GridConfig` | `true` | Show/hide grid or pass config object |
+| `gridConfig` | `GridConfig` | - | Grid settings (columns, rows, lineStyle, etc.) |
+| `showAxis` | `boolean \| AxisConfig` | `false` | Show/hide axis lines or pass config object |
+| `axisConfig` | `AxisConfig` | - | Axis settings (lineWidth, color, tickSize) |
+| `crosshairConfig` | `CrosshairConfig` | - | Crosshair/hover line settings |
+| `backgroundColor` | `string` | - | Override background color |
+| `timeFormat` | `string` | `'HH:mm:ss'` | Time format for labels (dayjs format) |
+| `showTimeLabels` | `boolean` | `false` | Show time labels on left side |
+
+#### Interaction Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `hasTooltip` | `boolean` | `true` | Enable tooltip on hover |
 | `hasZoom` | `boolean` | `true` | Enable zoom interactions |
-| `isDarkMode` | `boolean` | `false` | Enable dark theme |
-| `inLiveMode` | `boolean` | `false` | Auto-scroll to latest data |
-| `isReportChart` | `boolean` | `false` | Static mode (disables interactions) |
-| `chartNum` | `string` | `''` | Unique chart identifier |
-| `annotations` | `Annotation[]` | `[]` | Markers to display on chart |
-| `timesList` | `string[]` | `[]` | Time labels for horizontal lines |
+| `readOnly` | `boolean` | `false` | Static mode (disables interactions) |
+| `liveMode` | `boolean` | `false` | Auto-scroll to latest data |
 | `fixedTopZoom` | `boolean` | `false` | Anchor zoom at top |
 | `fixedBottomZoom` | `boolean` | `false` | Anchor zoom at bottom |
-| `shouldDrawTimeLines` | `boolean` | `false` | Render time labels on left |
-| `convertToCurrentUnit` | `function` | - | Unit conversion callback |
-| `funcPromises` | `function` | - | Visible range change callback |
-| `workerMinMaxListScaled` | `object` | - | Pre-calculated axis bounds |
+
+#### Theme Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `isDarkMode` | `boolean` | `false` | Enable dark theme |
 | `theme` | `ThemeConfig` | - | Custom theme colors |
+| `convertToCurrentUnit` | `function` | - | Unit conversion callback |
+
+#### Other Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `chartId` | `string` | `''` | Unique chart identifier |
+| `annotations` | `Annotation[]` | `[]` | Markers to display on chart |
+| `timeMarkers` | `string[]` | `[]` | Time labels for horizontal lines |
+| `liveDataBoundary` | `string` | - | Timestamp dividing historical/live data |
+| `onVisibleRangeChange` | `function` | - | Called when visible range changes |
+
+### Configuration Objects
+
+#### GridConfig
+
+```typescript
+interface GridConfig {
+  show?: boolean;           // Show grid (default: true)
+  columns?: number;         // Vertical lines (default: 10)
+  rows?: number | 'auto';   // Horizontal lines (default: 'auto')
+  lineStyle?: 'solid' | 'dashed' | 'dotted';  // Default: 'dashed'
+  lineWidth?: number;       // Default: 0.5
+  color?: string;           // Override theme color
+}
+```
+
+#### AxisConfig
+
+```typescript
+interface AxisConfig {
+  show?: boolean;      // Show axis (default: false)
+  lineWidth?: number;  // Default: 1
+  color?: string;      // Override theme color
+  tickSize?: number;   // Tick mark size, 0 to hide (default: 5)
+}
+```
+
+#### CrosshairConfig
+
+```typescript
+interface CrosshairConfig {
+  show?: boolean;                    // Show crosshair (default: true)
+  color?: string;                    // Default: 'red'
+  lineWidth?: number;                // Default: 1
+  style?: 'solid' | 'dashed';        // Default: 'solid'
+}
+```
 
 ### Data Types
 
@@ -149,8 +237,7 @@ function Dashboard() {
 
 ```typescript
 interface DataPoint {
-  received_at: string;  // ISO-8601 datetime
-  depth?: number;       // Optional depth value
+  timestamp: string;    // ISO-8601 datetime (key is configurable)
   [key: string]: number | string | undefined;  // Trace values
 }
 ```
@@ -167,16 +254,18 @@ interface Trace {
     symbol: string;       // Unit symbol (e.g., '°C')
     to_fixed?: number;    // Decimal places
   };
+  domain?: [number, number]; // Fixed min/max bounds for this trace
 }
 ```
 
-#### Annotation
+#### SecondaryField
 
 ```typescript
-interface Annotation {
-  time: string;         // ISO-8601 datetime
-  description: string;  // Annotation text
-  chart?: string;       // Filter to specific chart
+interface SecondaryField {
+  key: string;              // Key in DataPoint
+  label: string;            // Display label
+  unit?: string;            // Unit string
+  format?: (value) => string; // Custom formatter
 }
 ```
 
@@ -202,6 +291,112 @@ const yMin = minGraph(-3.2);  // Returns -4
 const yMax = maxGraph(97.5);  // Returns 98
 ```
 
+## Examples
+
+### Custom Grid Configuration
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  showGrid={{
+    columns: 8,
+    rows: 6,
+    lineStyle: 'dotted',
+    lineWidth: 1,
+    color: '#cccccc'
+  }}
+/>
+```
+
+### With Axis and Custom Time Format
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  showAxis={true}
+  axisConfig={{
+    lineWidth: 2,
+    color: '#333',
+    tickSize: 8
+  }}
+  showTimeLabels={true}
+  timeFormat="MMM DD HH:mm"
+/>
+```
+
+### Secondary Field (e.g., showing index or depth)
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  secondaryField={{
+    key: 'index',
+    label: 'Index',
+    format: (val) => val.toFixed(0)
+  }}
+/>
+```
+
+### Custom Crosshair
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  crosshairConfig={{
+    color: '#00ff00',
+    lineWidth: 2,
+    style: 'dashed'
+  }}
+/>
+```
+
+### Domain Mode (Trace Scaling)
+
+Control how each trace's Y-axis domain is calculated:
+
+**Independent Mode (default)** - Each trace uses its own min/max for scaling:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  domainMode="independent"  // Each trace fills the chart height
+/>
+```
+
+**Shared Mode** - All traces share the same global min/max scale:
+
+```jsx
+<TimeChart
+  data={data}
+  traces={traces}
+  domainMode="shared"  // All traces use same scale for comparison
+/>
+```
+
+**Fixed Domain Per Trace** - Set explicit bounds for specific traces:
+
+```jsx
+const traces = [
+  {
+    name: 'Temperature',
+    parameter: 'temp',
+    color: { code: '#ff6384' },
+    domain: [0, 100],  // Fixed scale 0-100
+  },
+  {
+    name: 'Humidity',
+    parameter: 'humidity',
+    color: { code: '#36a2eb' },
+    // No domain = auto-calculated based on domainMode
+  },
+];
+```
+
 ## Interactions
 
 | Interaction | Desktop | Mobile |
@@ -216,7 +411,7 @@ const yMax = maxGraph(97.5);  // Returns 98
 ### Dark/Light Mode
 
 ```jsx
-<CostumeLineChart
+<TimeChart
   isDarkMode={true}
   // ... other props
 />
@@ -225,13 +420,22 @@ const yMax = maxGraph(97.5);  // Returns 98
 ### Custom Theme
 
 ```jsx
-<CostumeLineChart
+<TimeChart
   theme={{
     background: '#1a1a2e',
     gridColor: '#333355',
     textColor: '#ffffff',
     annotationText: '#ffcc00',
   }}
+  // ... other props
+/>
+```
+
+### Direct Background Override
+
+```jsx
+<TimeChart
+  backgroundColor="#f5f5f5"
   // ... other props
 />
 ```
@@ -249,7 +453,7 @@ const convertToCurrentUnit = (value, unit) => {
   return value;
 };
 
-<CostumeLineChart
+<TimeChart
   convertToCurrentUnit={convertToCurrentUnit}
   // ... other props
 />
@@ -260,28 +464,47 @@ const convertToCurrentUnit = (value, unit) => {
 For real-time data, enable live mode to auto-scroll:
 
 ```jsx
-<CostumeLineChart
-  receivedData={realtimeData}
+<TimeChart
+  data={realtimeData}
   traces={traces}
-  inLiveMode={true}
+  liveMode={true}
   hasZoom
 />
 ```
 
 ## Performance Tips
 
-1. **Use `workerMinMaxListScaled`** - Pre-calculate bounds to avoid recalculation on each render
+1. **Use `traceMinMax`** - Pre-calculate bounds to avoid recalculation on each render
 2. **Limit visible data** - Filter data to visible time range when possible
 3. **Debounce updates** - For high-frequency data, batch updates
 4. **Memoize traces** - Use `useMemo` for trace configurations
 
 ```jsx
-const workerMinMaxListScaled = useMemo(() => ({
+const traceMinMax = useMemo(() => ({
   minAndMaxList: [{
     temperature: { min: 0, max: 100 },
     pressure: { min: 95, max: 105 },
   }],
 }), []);
+```
+
+## Migration from v0.x
+
+If you're upgrading from an older version, note the renamed props (old names still work but are deprecated):
+
+| Old Name | New Name |
+|----------|----------|
+| `receivedData` | `data` |
+| `funcPromises` | `onVisibleRangeChange` |
+| `isReportChart` | `readOnly` |
+| `inLiveMode` | `liveMode` |
+| `shouldDrawTimeLines` | `showTimeLabels` |
+| `timesList` | `timeMarkers` |
+| `chartNum` | `chartId` |
+| `workerMinMaxListScaled` | `traceMinMax` |
+| `receivedDataLastHistoricaldate` | `liveDataBoundary` |
+| `received_at` (in data) | `timestamp` (configurable via `timestampKey`) |
+| `CostumeLineChart` | `TimeChart` |
 ```
 
 ## Browser Support
