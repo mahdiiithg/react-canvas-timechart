@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-04-08
+
+### Fixed
+
+- **Tooltip Overflow**: Fixed tooltips being clipped by container
+  - Changed container `overflow: hidden` to `overflow: visible`
+  - Increased tooltip z-index from 1000 to 9999
+  - Improved positioning logic with better boundary checking
+  - Better fallback values when tooltip dimensions aren't available
+  - Tooltips now properly visible at all chart positions
+
+## [1.1.2] - 2026-04-08
+
+### Fixed
+
+- **Tooltip Visibility**: Increased tooltip opacity and contrast for better visibility
+  - Dark mode: Now uses `rgba(30, 30, 30, 0.95)` background (was nearly transparent)
+  - Light mode: Now uses `rgba(255, 255, 255, 0.95)` background
+  - Increased font size from 7-10px to 13px for better readability
+  - Increased padding and border-radius for better appearance
+  - Added `timechart-tooltip` class for new component name
+
+## [1.1.1] - 2026-04-08
+
+### Fixed
+
+- **Standalone Chart Support**: Fixed crash when using `TimeChart` without `ChartProvider`
+  - Added optional chaining to all context access (`setSharedZoom?.()`, `setSharedTooltip?.()`)
+  - Charts now work independently or synced
+
 ## [1.1.0] - 2026-04-08
 
 ### Added

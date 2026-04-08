@@ -1231,14 +1231,29 @@ const TimeChart = ({
       return;
     }
 
-    const padding = 8;
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
-    const tooltipWidth = tooltipEl.offsetWidth;
-    const tooltipHeight = tooltipEl.offsetHeight;
+    const padding = 10;
+    const containerRect = container.getBoundingClientRect();
+    const containerWidth = containerRect.width;
+    const containerHeight = containerRect.height;
+    const tooltipWidth = tooltipEl.offsetWidth || 200;
+    const tooltipHeight = tooltipEl.offsetHeight || 100;
 
-    const nextLeft = Math.max(padding, Math.min(sharedTooltip.x || 10, containerWidth - tooltipWidth - padding));
-    const nextTop = Math.max(padding, Math.min(sharedTooltip.y || 10, containerHeight - tooltipHeight - padding));
+    let nextLeft = sharedTooltip.x || 10;
+    let nextTop = sharedTooltip.y || 10;
+
+    // Keep tooltip within container bounds
+    if (nextLeft + tooltipWidth + padding > containerWidth) {
+      nextLeft = containerWidth - tooltipWidth - padding;
+    }
+    if (nextLeft < padding) {
+      nextLeft = padding;
+    }
+    if (nextTop + tooltipHeight + padding > containerHeight) {
+      nextTop = containerHeight - tooltipHeight - padding;
+    }
+    if (nextTop < padding) {
+      nextTop = padding;
+    }
 
     setTooltipPosition((prev) => {
       if (prev.left === nextLeft && prev.top === nextTop) return prev;
