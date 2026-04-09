@@ -73,6 +73,7 @@ const defaultCrosshairConfig = {
   style: 'solid', // 'solid', 'dashed'
 };
 
+
 /**
  * TimeChart - A high-performance canvas-based line chart component
  * 
